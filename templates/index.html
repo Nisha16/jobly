@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Jobly</title>
+    <meta content="width=device-width,initial-scale=1" name=viewport>
+		<link rel="icon" href="{{ url_for('static', filename='img/logo.png')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+  </head>
+  <body>
+		<div class="pull-right signup">
+			<a href="#" data-toggle="modal" data-target=".registerModal">SIGNUP</a>
+		</div>
+
+		<div class="container">
+	      <div class="inner">
+	          <h1>JOBLY</h1>
+
+	          <form action="">
+	              <lagend>Login to your account</lagend><br>
+	              <label><span class="glyphicon glyphicon-user"></span></label>
+	              <input type="text" placeholder='Username' class="input" /><br>
+	              <label><span class="glyphicon glyphicon-lock"></span></label>
+	              <input type="password" placeholder="password" class="input" /><br>
+								<button class="pull-left button" type="submit">Sign in</button>
+	          </form>
+
+	      </div>
+	  </div>
+
+		<!--REGİSTER MODAL -->
+				<div class="modal fade registerModal" tabindex="-1" role="dialog" aria-labelledby="RegisterModal">
+					<div class="modal-dialog modal-sm" role="document">
+
+
+						<form class="login col-md-12" id="register">
+							<div class="inputRegister">
+
+								<div class="form-group">
+									<label for="inputRegisterFirstname"></label>
+									<input type="name" class="registerstyle" min="1" max="5" id="inputRegisterFirstname"  placeholder="Firstname" style="font-family:Arial, FontAwesome">
+								</div>
+
+								<div class="form-group">
+									<label for="inputRegisterLastname"></label>
+									<input type="name" class="registerstyle" min="1" max="5" id="inputRegisterLastname"  placeholder="Lastname" style="font-family:Arial, FontAwesome">
+								</div>
+
+								<div class="form-group">
+									<label for="inputRegisterPhone"></label>
+									<input type="telephone" class="registerstyle"  id="inputRegisterPhone"  placeholder="Phone " style="font-family:Arial, FontAwesome">
+								</div>
+
+								<div class="form-group">
+									<label for="inputRegisterEmail"></label>
+									<input type="e-mail" class="registerstyle"  id="inputRegisterEmail"  placeholder="E-mail " style="font-family:Arial, FontAwesome">
+								</div>
+
+								<div class="form-group">
+									<label for="inputRegisterPassword"></label>
+									<input type="password" class="registerstyle" min="5" max="10"  id="inputRegisterPassword"  placeholder="Password" style="font-family:Arial, FontAwesome">
+								</div>
+
+								<div class="form-group">
+									<label for="inputRegisterPasswordConfirm"></label>
+									<input type="password" class="registerstyle" min="5" max="10"  id="inputRegisterPasswordConfirm"  placeholder="Password confirm" style="font-family:Arial, FontAwesome">
+								</div>
+							</div>
+							<!-- <div class="inputRegister pull-right"> -->
+
+								<!-- <div class="form-group">
+									<label for="inputRegisterPassword"></label>
+									<input type="password" class="registerstyle" min="5" max="10"  id="inputRegisterPassword"  placeholder="Password" style="font-family:Arial, FontAwesome">
+								</div>
+								<div class="form-group">
+									<label for="inputRegisterEmail"></label>
+									<input type="e-mail" class="registerstyle"  id="inputRegisterEmail"  placeholder="E-mail " style="font-family:Arial, FontAwesome">
+								</div> -->
+							<!-- </div> -->
+
+
+							<div class="text-center">
+								<button type="submit" class="btn btn-danger btn-lg ">Register</button>
+							</div>
+						</form>
+
+					</div>
+				</div>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  </body>
+</html>

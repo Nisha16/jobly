@@ -14,14 +14,12 @@ html{
 
 
 /*container design*/
-.container .inner{width: 480px; margin: 100px auto; border : 1px solid none; background: rgba(55,55,55, 0.4); padding: 60px; -webkit-transform: skew(30deg,10deg);-moz-transform: skew(30deg,10deg); -o-transform: skew(30deg,10deg); transition-duration: 0.7s;}
-.container .inner:hover{-webkit-transform:skew(0deg,0deg); -moz-transform:skew(0deg,0deg);-o-transform:skew(0deg,0deg);transition-duration: 0.7s; background: transparent;}
+.container .inner{width: 480px; margin: 100px auto; border : 1px solid none; background: rgba(55,55,55, 0.4); padding: 60px; }
 .inner h1{color : #84022b; font-family: calibri, arial; font-weight: bold; text-align: center; font-size: 60px}
 .inner form label span{color: white;}
 .inner form lagend{color: #f41a55; font-size: 20px;}
 .inner .input{width : 90%; border: none; border-bottom: 1px solid white; color: #a70034; background: transparent; padding: 10px;}
 .inner .input:focus{box-shadow: none; border: 1px solid none;}
-.container hr{border-color: rgb(100,100,100);}
 .inner .button{border-radius:10px 10px 10px 10px;color: #a70034; background: rgba(50,50,50, 0.4); padding: 2px 30px ;  border: 2px solid #a70034;  font-family: calibri; margin:10px auto; font-weight: bold;}
 .inner .button:hover{background: #84022b; color: white;}
 

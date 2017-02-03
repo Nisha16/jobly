@@ -2,12 +2,32 @@ from flask import Flask,render_template, request, url_for, redirect, flash, sess
 from dbConnect import connection
 import gc
 
-from wtforms import Form, BooleanField, IntegerField, TextField, validators, PasswordField
+from wtforms import Form, BooleanField, IntegerField, TextField, validators, PasswordField, DateField
+from wtforms.fields.html5 import DateField
 from passlib.hash import sha256_crypt
+from functools import wraps
 
 from MySQLdb import escape_string as thwart
 
 app = Flask(__name__)
+
+@app.errorhandler(405)
+def page_not_found(e):
+	return render_template('405.html')
+
+@app.errorhandler(404)
+def page_not_found(e):
+	return render_template('404.html')
+
+def login_required(f):
+	@wraps(f)
+	def wrap(*args, **kwargs):
+		if 'logged_in' in session:
+			return f(*args, **kwargs)
+		else:
+			flash("You need to log in first")
+			return redirect(url_for('main'))
+	return wrap
 
 @app.route('/', methods=["GET","POST"])
 def main():
@@ -16,16 +36,20 @@ def main():
 		c, conn = connection()
 		if request.method == "POST":
 			data = c.execute("SELECT * FROM User WHERE email = (%s)", thwart(request.form['email']))
-			data = c.fetchone()[4]
-			print "data: ", data
+			data = c.fetchall()
+			print "data: ", data[0][4]
 
-			if sha256_crypt.verify(request.form['password'], data):
+			if sha256_crypt.verify(request.form['password'], data[0][4]):
 				print "Member signed in"
 				session['logged_in'] = True
 				session['email'] = request.form['email']
-
 				flash("You are now logged in")
-				return redirect(url_for("homepage"))
+				jobList = c.execute("SELECT * FROM Jobs WHERE creator = (%s)", session['email'])
+				if int(jobList) > 0:
+					jobList = c.fetchall()
+					return render_template("homepage.html", data=data, jobList=jobList)
+				else:
+					return render_template("homepage.html", data=data)
 			else:
 				error = "Invalid credentials, Please try again."
 
@@ -34,8 +58,16 @@ def main():
 
 	except Exception as e:
 		error = "Record does not exists."
-		# flash(e)
+		flash(e)
 		return render_template('index.html', error=error)
+
+@app.route('/logout/')
+@login_required
+def logout():
+	session.clear()
+	flash("You have been logged out!")
+	gc.collect()
+	return redirect(url_for('main'))
 
 @app.route('/homepage/')
 def homepage():
@@ -52,6 +84,19 @@ class RegistrationForm(Form):
     ])
 	confirm = PasswordField('Repeat Password')
 	accept_tos = BooleanField('I accept the Terms of Service and Privacy Notice (updated Jan 21, 2017)', [validators.Required()])
+
+class JobForm(Form):
+	title = TextField('Title', [validators.Length(min=2, max=20)])
+	requirement = TextField('Requirement', [validators.Length(min=2, max=1000)])
+	jobDesc = TextField('Job Description', [validators.Length(min=2, max=1000)])
+	location = TextField('Location', [validators.Length(min=2, max=20)])
+	experience = IntegerField('Experience', [validators.NumberRange(min=1, max=2)])
+	rcg = BooleanField('RCG', default=False)
+	internship = BooleanField('Internship', default=False)
+	requisition = TextField('Req Number', [validators.Length(min=3, max=10)])
+	reqdate = DateField('Req Date', format='%Y-%m-%d')
+	dept = TextField('Department', [validators.Length(min=6, max=50)])
+
 
 @app.route('/register/', methods=["GET","POST"])
 def register_page():
@@ -86,13 +131,45 @@ def register_page():
 		return render_template("register.html", form=form)
 	except Exception as e:
 		return (str(e))
-@app.errorhandler(405)
-def page_not_found(e):
-	return render_template('405.html')
 
-@app.errorhandler(404)
-def page_not_found(e):
-	return render_template('404.html')
+@app.route('/add-new-job/', methods=["GET","POST"])
+@login_required
+def createJobRequisition():
+	try:
+		form = JobForm(request.form)
+		print "Job email: ", session['email']
+		if request.method == "POST" and form.validate():
+			title = form.title.data
+			requirement = form.requirement.data
+			jobDesc = form.jobDesc.data
+			location = form.location.data
+			experience = form.experience.data
+			rcg = form.rcg.data
+			internship = form.internship.data
+			requisition = form.requisition.data
+			reqdate = form.reqdate.data
+			dept = form.dept.data
+			creator = session['email']
+			c, conn = connection()
+
+			x = c.execute("SELECT * FROM Jobs WHERE requisitionNumber = (%s)", (thwart(requisition)))
+			if int((x)) > 0:
+				print "Job exists"
+				flash("Corresponding job requisition number already exists.")
+				return render_template('newJob.html', form=form)
+			else:
+				c.execute("INSERT INTO Jobs (title, requirement, jobDesc, location, experience, RCG, internship, requisitionNumber, reqDate, dept, creator) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (title, requirement, jobDesc, location, experience, rcg, internship, requisition, reqdate, dept, creator))
+				conn.commit()
+				print "New Job added"
+				flash("Job created successfully.")
+				c.close()
+				conn.close()
+				gc.collect()
+				return redirect(url_for('homepage'))
+		return render_template("newJob.html", form=form)
+	except Exception as e:
+		flash(e)
+		return (str(e))
 
 app.secret_key = "\x18\x98\\\xfdj#\x83JYh7\x84"
 

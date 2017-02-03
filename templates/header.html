@@ -8,6 +8,28 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
   </head>
+  <header>
+    <!-- <div class="navbar-header">
+      <a class="navbar-brand" href="/">
+	  <img style="max-width:120px; margin-top: -7px;" src="{{ url_for('static', filename='img/logo.png') }}">
+	  </a>
+    </div> -->
+
+    <ul class="nav navbar-nav navbar-right">
+		    <div style="margin-right: 10px; margin-left: 15px; margin-top: 5px; margin-bottom: 5px;"  class="container-fluid">
+			<h5>
+				{% if session.logged_in %}
+				<a href="/support-donate/"> <span class="glyphicon glyphicon-heart"></span> Support&nbsp;&nbsp;&nbsp;</a>
+				<a href="/logout/"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+				{% else %}
+				<a href="/register/"><span class="glyphicon glyphicon-pencil"></span> Sign up</a>
+				{% endif %}
+			</div>
+
+			</h5>
+		  </div>
+      </ul>
+  </header>
   <body>
     <div class="container" style="min-height:100% width:80%">
     	{% with messages = get_flashed_messages() %}

@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Jobly</title>
-    <meta content="width=device-width,initial-scale=1" name=viewport>
-		<link rel="icon" href="{{ url_for('static', filename='img/logo.png')}}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
-  </head>
-  <body>
-		<div class="pull-right signup">
-			No Account? <a href='/register/'>SIGNUP </a>here
-		</div>
+{% extends "header.html" %}
+
+{% block body %}
+
+	<body>
 
 		<div class="container">
 	      <div class="inner">
@@ -29,8 +20,9 @@
 						<p>{{ error }}</p>
 
 	      </div>
+
 	  </div>
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-	  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-  </body>
-</html>
+
+	</body>
+
+{% endblock %}

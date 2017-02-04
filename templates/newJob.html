@@ -3,29 +3,96 @@
 {% block body %}
 
 <body>
-	<div class = "container">
-		<h4>sign up</h4>
-		<br>
-		{% from "_formhelpers.html" import render_field %}
-		<form method=post action="/add-new-job/">
-			<dl>
-				{{render_field(form.title)}}
-				{{render_field(form.requirement)}}
-				{{render_field(form.jobDesc)}}
-				{{render_field(form.location)}}
-				{{render_field(form.experience)}}
-				{{render_field(form.rcg)}}
-				{{render_field(form.internship)}}
-				{{render_field(form.requisition)}}
-				{{render_field(form.reqdate) }}
-				{{render_field(form.dept)}}
-			</dl>
-			<p><input type=submit value=Submit></p>
-		</form>
+	<div class="container">
+		<div class="row">
+			{% from "_formhelpers.html" import render_field %}
+			<form class="form-horizontal" action="/add-new-job/" method="post">
+				<fieldset>
+					<!-- Form Name -->
+					<legend>Create Job</legend>
 
-		{% if error %}
-			<p class="error"><strong>Error:</strong>{{error}}</p>
-		{% endif %}
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Title</label>
+						<div class="col-md-5">
+							{{render_field(form.title, placeholder="Job Title", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Requirement</label>
+						<div class="col-md-5">
+							{{render_field(form.requirement, placeholder="Technical skills required", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Description</label>
+						<div class="col-md-5">
+							{{render_field(form.jobDesc, placeholder="Job Description", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Location</label>
+						<div class="col-md-5">
+							{{render_field(form.location, placeholder="Job location", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Experience</label>
+						<div class="col-md-5">
+							{{render_field(form.experience, placeholder="Required experience", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Is this RCG</label>
+						<div class="col-md-5">
+							{{render_field(form.rcg)}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Is this Internship</label>
+						<div class="col-md-5">
+							{{render_field(form.internship)}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Job Number</label>
+						<div class="col-md-5">
+							{{render_field(form.requisition, placeholder="Requisition Number", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Creation Date</label>
+						<div class="col-md-5">
+							{{render_field(form.reqdate, placeholder="Today's Date", class="form-control")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Department</label>
+						<div class="col-md-5">
+							{{render_field(form.dept, placeholder="Department", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<!-- Button -->
+					<div class="form-group">
+					  <div class="col-md-4">
+					    <button id="singlebutton" name="singlebutton" class="btn btn-primary">Submit</button>
+					  </div>
+					</div>
+				</fieldset>
+			</form>
+			{% if error %}
+				<p class="error"><strong>Error:</strong>{{error}}</p>
+			{% endif %}
+		</div>
 
 	</div>
 </body>

@@ -2,10 +2,11 @@ from flask import Flask,render_template, request, url_for, redirect, flash, sess
 from dbConnect import connection
 import gc
 
-from wtforms import Form, BooleanField, IntegerField, TextField, validators, PasswordField, DateField
+from wtforms import Form, BooleanField, IntegerField, TextField, validators, PasswordField, DateField, TextAreaField
 from wtforms.fields.html5 import DateField
 from passlib.hash import sha256_crypt
 from functools import wraps
+from datetime import timedelta
 
 from MySQLdb import escape_string as thwart
 
@@ -83,14 +84,14 @@ class RegistrationForm(Form):
         validators.EqualTo('confirm', message='Passwords must match')
     ])
 	confirm = PasswordField('Repeat Password')
-	accept_tos = BooleanField('I accept the Terms of Service and Privacy Notice (updated Jan 21, 2017)', [validators.Required()])
+	# accept_tos = BooleanField('I accept the Terms of Service and Privacy Notice (updated Jan 21, 2017)', [validators.Required()])
 
 class JobForm(Form):
 	title = TextField('Title', [validators.Length(min=2, max=20)])
-	requirement = TextField('Requirement', [validators.Length(min=2, max=1000)])
-	jobDesc = TextField('Job Description', [validators.Length(min=2, max=1000)])
+	requirement = TextAreaField('Requirement', [validators.Length(min=2, max=1000)])
+	jobDesc = TextAreaField('Job Description', [validators.Length(min=2, max=1000)])
 	location = TextField('Location', [validators.Length(min=2, max=20)])
-	experience = IntegerField('Experience', [validators.NumberRange(min=1, max=2)])
+	experience = IntegerField('Experience')
 	rcg = BooleanField('RCG', default=False)
 	internship = BooleanField('Internship', default=False)
 	requisition = TextField('Req Number', [validators.Length(min=3, max=10)])
@@ -172,6 +173,8 @@ def createJobRequisition():
 		return (str(e))
 
 app.secret_key = "\x18\x98\\\xfdj#\x83JYh7\x84"
+
+app.permanent_session_lifetime = timedelta(days=1)
 
 if __name__ == "__main__":
 	app.debug = True

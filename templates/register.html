@@ -4,25 +4,68 @@
 
 <body>
 	<div class = "container">
-		<h4>sign up</h4>
-		<br>
+		<div class="row main">
+			<div class="panel-heading">
+				<div class="panel-title text-center">
+					<h1 class="title">JOBLY</h1>
+					<hr />
+				</div>
+			</div>
+		<div class="main-login main-center">
 		{% from "_formhelpers.html" import render_field %}
-		<form method=post action="/register/">
-			<dl>
-				{{render_field(form.firstname)}}
-				{{render_field(form.lastname)}}
-				{{render_field(form.email)}}
-				{{render_field(form.password)}}
-				{{render_field(form.confirm)}}
-				{{render_field(form.accept_tos)}}
-			</dl>
-			<p><input type=submit value=Register></p>
+		<form method=post action="/register/" class="form-horizontal">
+			<div class="form-group">
+				<div class="cols-sm-10">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+							{{render_field(form.firstname, placeholder="First Name", class="form-control")}}
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="cols-sm-10">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+							{{render_field(form.lastname, placeholder="Last Name", class="form-control")}}
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="cols-sm-10">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+							{{render_field(form.email, placeholder="email", class="form-control")}}
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="cols-sm-10">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+							{{render_field(form.password, placeholder="Password", class="form-control")}}
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="cols-sm-10">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+							{{render_field(form.confirm, placeholder="Confirm Password", class="form-control")}}
+					</div>
+				</div>
+			</div>
+			<p><input type=submit class="btn btn-primary btn-lg btn-block login-button" value=Register></p>
 		</form>
 
 		{% if error %}
 			<p class="error"><strong>Error:</strong>{{error}}</p>
 		{% endif %}
-
+			</div>
+		</div>
 	</div>
 </body>
 

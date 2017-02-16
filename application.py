@@ -113,7 +113,6 @@ class ApplicantForm(Form):
 	applicantName = TextField('Applicant Name', [validators.Length(min=2, max=20)])
 	applicantEmail = TextField('Applicant Email Address', [validators.Length(min=6, max=50)])
 	appliedDate = DateField('Applied Date', format='%Y-%m-%d')
-	resume = FileField(validators=[FileRequired()])
 
 
 @app.route('/register/', methods=["GET","POST"])
@@ -232,10 +231,10 @@ def applyForJob(jobid):
 			applicantName = form.applicantName.data
 			applicantEmail = form.applicantEmail.data
 			appliedDate = form.appliedDate.data
-			applicantResume = form.resume.data
-			if applicantResume:
-				filename = secure_filename(applicantResume.filename)
-				applicantResume.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+			file = request.files['file']
+			if file:
+				filename = secure_filename(file.filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 				linktofile = os.path.join(app.config['UPLOAD_FOLDER'],filename)
 				print "jobid: ", jobid
 				print "path: ", linktofile

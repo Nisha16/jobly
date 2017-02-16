@@ -1,16 +1,25 @@
 from flask import Flask,render_template, request, url_for, redirect, flash, session
 from dbConnect import connection
 import gc
+import os
 
 from wtforms import Form, BooleanField, IntegerField, TextField, validators, PasswordField, DateField, TextAreaField
+from flask_wtf.file import FileField, FileRequired
 from wtforms.fields.html5 import DateField
 from passlib.hash import sha256_crypt
 from functools import wraps
 from datetime import timedelta
+from werkzeug import secure_filename
 
 from MySQLdb import escape_string as thwart
 
 app = Flask(__name__)
+
+# This is the path to the upload directory
+app.config['UPLOAD_FOLDER'] = 'resumes/'
+# These are the extension that we are accepting to be uploaded
+app.config['ALLOWED_EXTENSIONS'] = set(['txt', 'pdf', 'doc', 'docx'])
+
 
 @app.errorhandler(405)
 def page_not_found(e):
@@ -30,6 +39,7 @@ def login_required(f):
 			return redirect(url_for('main'))
 	return wrap
 
+# Below functions to display contents for recruiters
 @app.route('/', methods=["GET","POST"])
 def main():
 	error = ''
@@ -45,6 +55,7 @@ def main():
 				session['logged_in'] = True
 				session['email'] = request.form['email']
 				flash("You are now logged in")
+				jobList = None
 				jobList = c.execute("SELECT * FROM Jobs WHERE creator = (%s)", session['email'])
 				if int(jobList) > 0:
 					jobList = c.fetchall()
@@ -97,6 +108,12 @@ class JobForm(Form):
 	requisition = TextField('Req Number', [validators.Length(min=3, max=10)])
 	reqdate = DateField('Req Date', format='%Y-%m-%d')
 	dept = TextField('Department', [validators.Length(min=6, max=50)])
+
+class ApplicantForm(Form):
+	applicantName = TextField('Applicant Name', [validators.Length(min=2, max=20)])
+	applicantEmail = TextField('Applicant Email Address', [validators.Length(min=6, max=50)])
+	appliedDate = DateField('Applied Date', format='%Y-%m-%d')
+	resume = FileField(validators=[FileRequired()])
 
 
 @app.route('/register/', methods=["GET","POST"])
@@ -163,14 +180,93 @@ def createJobRequisition():
 				conn.commit()
 				print "New Job added"
 				flash("Job created successfully.")
+
+				# Display added job
+				jobList = None
+				jobList = c.execute("SELECT * FROM Jobs WHERE creator = (%s)", session['email'])
+				if int(jobList) > 0:
+					jobList = c.fetchall()
 				c.close()
 				conn.close()
 				gc.collect()
-				return redirect(url_for('homepage'))
+				return render_template("homepage.html", jobList=jobList)
 		return render_template("newJob.html", form=form)
 	except Exception as e:
 		flash(e)
 		return (str(e))
+
+@app.route('/jobs/<jobid>')
+def displayJob(jobid):
+	c, conn = connection()
+	jobData = None
+	jobData = c.execute("SELECT * FROM Jobs WHERE requisitionNumber = (%s)", jobid )
+	if int(jobData) > 0:
+		jobData = c.fetchall()
+	c.close()
+	conn.close()
+	gc.collect()
+	return render_template("jobDetails.html", jobData=jobData)
+
+# Below functions to diplay contents to applicants
+@app.route('/jobly/list-of-jobs/')
+def listOfJobs():
+	c, conn = connection()
+	list_of_jobs = None
+	list_of_jobs = c.execute("SELECT * FROM Jobs")
+	if int(list_of_jobs) > 0:
+		list_of_jobs = c.fetchall()
+	print "list_of_jobs: ", list_of_jobs
+	c.close()
+	conn.close()
+	gc.collect()
+	return render_template("listOfJobs.html", list_of_jobs=list_of_jobs)
+
+@app.route('/jobs/<jobid>/apply/', methods=['GET','POST'])
+def applyForJob(jobid):
+
+	try:
+		form = ApplicantForm(request.form)
+		c, conn = connection()
+		jobData = None
+		if request.method == "POST" and form.validate():
+			applicantName = form.applicantName.data
+			applicantEmail = form.applicantEmail.data
+			appliedDate = form.appliedDate.data
+			applicantResume = form.resume.data
+			if applicantResume:
+				filename = secure_filename(applicantResume.filename)
+				applicantResume.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+				linktofile = os.path.join(app.config['UPLOAD_FOLDER'],filename)
+				print "jobid: ", jobid
+				print "path: ", linktofile
+				c.execute("INSERT INTO Applicants (appName, appEmail, appliedDate, linkToResume, jobId) VALUES (%s, %s, %s, %s, %s)",
+				(applicantName, applicantEmail, appliedDate, linktofile, jobid))
+				conn.commit()
+				c.close()
+				conn.close()
+				gc.collect()
+				return redirect(url_for('thankyou'))
+		jobData = c.execute("SELECT * FROM Jobs WHERE requisitionNumber = (%s)", jobid )
+		if int(jobData) > 0:
+			jobData = c.fetchall()
+		c.close()
+		conn.close()
+		gc.collect()
+		return render_template("jobApplication.html", jobData=jobData, form=form, jobid=jobid)
+	except Exception as e:
+		flash(e)
+		return (str(e))
+
+
+
+@app.route('/thankyou/')
+def thankyou():
+	return render_template("thankyou.html")
+
+# For a given file, return whether it's an allowed type or not
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
 app.secret_key = "\x18\x98\\\xfdj#\x83JYh7\x84"
 

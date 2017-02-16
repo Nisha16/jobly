@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Jobly</title>
+    <meta content="width=device-width,initial-scale=1" name=viewport>
+    <link rel="icon" href="{{ url_for('static', filename='img/logo.png')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+
+    <!-- Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    {% if jobData %}
+      <div class="container" style="width:600px;">
+        {% for each in jobData %}
+        <h3><strong>{{ each[1] }}</strong></h3>
+        <br>
+        <i><b>Req Number: </b></i> {{ each[8] }}
+        <br>
+        {% if each[6] %}
+        <i><b>Job Position: </b></i>New Grad
+        {% elif each[7] %}
+        <i><b>Job Position: </b></i>Intern
+        {% else %}
+        <i><b>Job Position: </b></i>experienced ({{ each[5] }} years)
+        {% endif %}
+        <br>
+        <i><b>Location: </b></i> {{ each[4] }}
+        <br>
+        <br>
+        <i><b>Jon Requirement</b></i>
+        <p>{{ each[2] }}</p>
+        <br><br>
+        <i><b>Job Description</b></i>
+        <p>{{ each[3] }}</p>
+        <br><br>
+        <i><b>Department: </b></i>{{ each[10] }}
+        <br>
+        <i><b>Publisher: </b></i>{{ each[11] }}
+        <br>
+        <i><b>Published Date: </b></i>{{ each[9].strftime('%Y-%m-%d') }}
+        {% endfor %}
+      </div>
+      <div class = "container application-section" style="width:400px;">
+        <div class="row main">
+        <div class="application-form">
+        {% from "_formhelpers.html" import render_field %}
+        <form method=post action="/jobs/{{ jobid }}/apply/" enctype="multipart/form-data">
+          <div class="form-group">
+            <div class="cols-md-5">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+                  {{render_field(form.applicantName, placeholder="Full Name", class="form-control")}}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="cols-md-5">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+                  {{render_field(form.applicantEmail, placeholder="email", class="form-control")}}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="cols-md-5">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                  {{render_field(form.appliedDate, placeholder="Today's Date", class="form-control")}}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+						<!-- <label class="col-md-4 control-label" for="Current Fleet Size">Creation Date</label> -->
+						<div class="col-md-10">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-upload" aria-hidden="true"></i></span>
+							  <!-- <input type="file" name="file" value="" accept="file_extension"> -->
+                {{render_field(form.resume, class="form-control", accept="file_extension")}}
+						</div>
+					</div>
+        </div>
+        <br>
+        <p><input type=submit class="btn btn-primary btn-lg btn-block login-button" value=Apply></p>
+        </form>
+
+        {% if error %}
+          <p class="error"><strong>Error:</strong>{{error}}</p>
+        {% endif %}
+          </div>
+        </div>
+      </div>
+
+    {% else %}
+      <h2>The Requested job id is not found</h2>
+    {% endif %}
+
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  </body>
+</html>

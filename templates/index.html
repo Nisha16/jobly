@@ -4,24 +4,46 @@
 
 	<body>
 
-		<div class="container">
-	      <div class="inner">
-	          <h1>JOBLY</h1>
+		<div class = "container">
+			<div class="row main">
+				<div class="panel-heading">
+					<div class="panel-title text-center">
+						<h1 class="title">JOBLY</h1>
+						<hr />
+					</div>
+				</div>
+			<div class="main-login main-center">
+			{% from "_formhelpers.html" import render_field %}
+			<form method=post action="" class="form-horizontal">
 
-	          <form action="" method="post">
-	              <lagend>Login to your account</lagend><br>
-	              <label><span class="glyphicon glyphicon-user"></span></label>
-	              <input type="email" placeholder='Email' class="input" name="email" value="{{request.form.email}}"/><br>
-	              <label><span class="glyphicon glyphicon-lock"></span></label>
-	              <input type="password" placeholder="password" class="input" name=password value="{{request.form.password}}"/><br>
-								<button class="pull-left button" type="submit" >Sign in</button>
-	          </form>
+				<div class="form-group">
+					<div class="cols-sm-10">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+								<input type="email" class="form-control" placeholder="Email" name=email value="{{request.form.email}}"/>
+						</div>
+					</div>
+				</div>
 
-						<p>{{ error }}</p>
+				<div class="form-group">
+					<div class="cols-sm-10">
+						<div class="input-group">
+							<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+								<input type="password" class="form-control" placeholder="password" name=password value="{{request.form.password}}"/>
+						</div>
+					</div>
+				</div>
 
-	      </div>
+				<p><input type=submit class="btn btn-primary btn-lg btn-block login-button" value=SignIn></p>
+			</form>
 
-	  </div>
+			{% if error %}
+				<p class="error"><strong>Error:</strong>{{error}}</p>
+			{% endif %}
+				</div>
+			</div>
+		</div>
+
 
 	</body>
 

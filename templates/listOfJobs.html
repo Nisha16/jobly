@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Jobly</title>
+    <meta content="width=device-width,initial-scale=1" name=viewport>
+    <link rel="icon" href="{{ url_for('static', filename='img/logo.png')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+
+    <!-- Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    {% if list_of_jobs %}
+      <table class="table table-hover table-responsive">
+        <thead>
+          <th>Title</th>
+          <th>Location</th>
+          <th>Department</th>
+          <th>Job Type</th>
+          <th>More Details</th>
+        </thead>
+        <tbody>
+          <tr>
+            {% for each in list_of_jobs %}
+            <td>{{ each[1] }}</td>
+            <td>{{ each[4] }}</td>
+            <td>{{ each[10] }}</td>
+            {% if each[5] == 0 %}
+            {% if each[6] %}
+              <td>New Grad</td>
+            {% else %}
+              <td>Intern</td>
+            {% endif %}
+            {% else %}
+              <td>Experienced</td>
+            {% endif %}
+            <td><a href="/jobs/{{ each[8] }}/apply" target="_blank">Apply</a></td>
+          </tr>
+        </tbody>
+        {% endfor %}
+      </table>
+    {% else %}
+    <div class="container">
+      You have not created any jobs.
+    </div>
+    {% endif %}
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  </body>
+</html>

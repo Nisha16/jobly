@@ -59,28 +59,33 @@
 							{% if appData %}
 								<div class="container">
 									{% for each in appData %}
-									<h3><strong>Applicant Details</strong></h3>
-									<br>
-									<i><b>Applicant Name: </b></i> {{ each[0] }}
-									<br>
-									<i><b>Contact Info: </b></i> {{ each[1] }}
-									<br>
-									<i><b>Job number: </b></i> {{ each[2] }}
-									<br>
-									<i><b>Resume: </b></i> <a href="/Users/vidya/Desktop/Nisha/WebApplications/flask_project/{{ each[3] }}" download>Download <i class="fa fa-download" aria-hidden="true"></i></a>
-									<br>
-										<form action="/applicants/{{ each[2] }}/details/{{ each[0] }}/update/" method="post">
-										<i><b>Stage: </b></i>
-										<select name="stages">
-											<option value="New">{{ each[4] }}</option>
-											<option value="Screening">Screening</option>
-											<option value="Interviewing">Interviewing</option>
-											<option value="Declined">Declined</option>
-											<option value="Offered">Offered</option>
-										</select>
+										<h3><strong>Applicant Details</strong></h3>
 										<br>
-										<button type="Submit" class="btn btn-success" name="button">Update</button>
-										</form>
+										<i><b>Applicant Name: </b></i> {{ each[0] }}
+										<br>
+										<br>
+										<i><b>Contact Info: </b></i> {{ each[1] }}
+										<br>
+										<br>
+										<i><b>Job number: </b></i> {{ each[2] }}
+										<br>
+										<br>
+										<i><b>Resume: </b></i> <a href="/Users/vidya/Desktop/Nisha/WebApplications/flask_project/{{ each[3] }}" download>Download <i class="fa fa-download" aria-hidden="true"></i></a>
+										<br>
+										<br>
+											<form action="/applicants/{{ each[2] }}/details/{{ each[0] }}/update/" method="post">
+											<i><b>Stage: </b></i>
+											<select name="stages">
+												<option value="New">{{ each[4] }}</option>
+												<option value="Screening">Screening</option>
+												<option value="Interviewing">Interviewing</option>
+												<option value="Declined">Declined</option>
+												<option value="Offered">Offered</option>
+											</select>
+											<br>
+											<br>
+											<button type="Submit" class="btn btn-success" name="button">Update</button>
+											</form>
 									{% endfor %}
 								</div>
 							{% else %}

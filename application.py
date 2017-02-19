@@ -346,7 +346,7 @@ def allowed_file(filename):
 
 app.secret_key = "\x18\x98\\\xfdj#\x83JYh7\x84"
 
-app.permanent_session_lifetime = timedelta(days=1)
+app.permanent_session_lifetime = timedelta(minutes=1440)
 
 if __name__ == "__main__":
 	app.debug = True

@@ -19,13 +19,6 @@
 						{% endif %}
 					</div>
 				</div>
-				<!-- END SIDEBAR USER TITLE -->
-				<!-- SIDEBAR BUTTONS -->
-				<!-- <div class="profile-userbuttons">
-					<button type="button" class="btn btn-success btn-sm">Follow</button>
-					<button type="button" class="btn btn-danger btn-sm">Message</button>
-				</div> -->
-				<!-- END SIDEBAR BUTTONS -->
 				<!-- SIDEBAR MENU -->
 				<div class="profile-usermenu">
 					<ul class="nav">
@@ -58,23 +51,30 @@
 		<div id="applicants" class="col-md-9 tab-content">
 			<div class="profile-content">
 				{% if applicantList %}
-								{% for each in applicantList %}
-								<div id="rectangle">
-									<p>
-										<span style="float: left"><a href="/jobs/{{ each[2] }}" target="_blank"><b>{{ each[0] }}</b></a></span>
-  									<span style="float: right"><i>{{ each[2] }}</i></span>
-									</p>
-									<br><br>
-									<p>
-										<b>Date Posted: </b>{{ each[1].strftime('%m-%d-%Y') }}
-									</p>
-									<p>
-										<b>No. of Applicants: </b>{{ each[3] }}
-										<p><a href="/applicants/{{ each[2] }}/">Click for Applicant list</a></p>
-									</p>
-								</div>
+								<table class="table table-striped table-bordered table-hover">
+							    <thead>
+							      <tr>
+							        <th>Job ID</th>
+							        <th>Title</th>
+							        <th>Date Posted</th>
+											<th>No. of Applicants</th>
+											<th>Details</th>
+							      </tr>
+							    </thead>
+							    <tbody>
+										{% for each in applicantList %}
+							      <a href="/applicants/{{ each[2] }}/"><tr>
+							        <td>{{ each[2] }}</td>
+							        <td><a href="/jobs/{{ each[2] }}" target="_blank"><b>{{ each[0] }}</b></a></td>
+							        <td>{{ each[1].strftime('%m-%d-%Y') }}</td>
+											<td>{{ each[3] }}</td>
+											<td><a href="/applicants/{{ each[2] }}/">Click for Applicant list</a></td>
+							      </tr></a>
+									</tbody>
+									{% endfor %}
+								</table>
 								<br><br>
-						{% endfor %}
+
 				{% else %}
 				<div class="container">
 					There are no applicants fro any of the jobs you have created..

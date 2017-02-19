@@ -267,3 +267,7 @@ input::-webkit-input-placeholder {
 .navbar-default .navbar-nav > li > a:focus {
     font-weight: bold;
 }
+
+.appForm {
+  padding-top: 30px;
+}

@@ -56,34 +56,44 @@
 		</div>
 		<div class="col-md-9 tab-content">
             <div class="profile-content">
-							<a href="/add-new-job/"><span class="glyphicon glyphicon-log-out"></span> Create Job Requirement</a>
 							<!-- <div class="container"> -->
-              {% if jobList %}
+              {% if appData %}
 								<table class="table table-hover table-responsive">
 									<thead>
 										<th>Job ID</th>
-										<th>Title</th>
-										<th>Job Descritpion</th>
-										<th>Requested Date</th>
-										<th>Department</th>
-										<th>More Details</th>
+										<th>Applicant Name</th>
+										<th>Applicant email</th>
+										<th>Applied Date</th>
+										<th>Resume</th>
+										<th>Stage</th>
 									</thead>
 									<tbody>
+
 										<tr>
-											{% for each in jobList %}
-											<td>{{ each[8] }}</td>
-											<td>{{ each[1] }}</td>
-											<td>{{ each[3] }}</td>
-											<td>{{ each[9] }}</td>
-											<td>{{ each[10] }}</td>
-											<td><a href="/jobs/{{ each[8] }}" target="_blank">View</a></td>
+											{% for each in appData %}
+											<td>{{ each[0] }}</td>
+											<td><a href="/applicants/{{ each[0] }}/details/{{ each[1] }}/">{{ each[1] }}</a></td>
+											<td>{{ each[2] }}</td>
+											<td>{{ each[3].strftime('%m-%d-%Y') }}</td>
+											<td><a href="file://///Users/vidya/Desktop/Nisha/WebApplications/flask_project/{{ each[4] }}" target="_blank">To view online <i class="fa fa-file" aria-hidden="true"></i></a> <br>
+												<a href="/Users/vidya/Desktop/Nisha/WebApplications/flask_project/{{ each[4] }}" download>Download <i class="fa fa-download" aria-hidden="true"></i></a></td>
+											<td>
+												{{ each[5] }}
+												<!-- <select name="stages">
+													<option value="New">New</option>
+													<option value="Screening">Screening</option>
+													<option value="Interviewing">Interviewing</option>
+													<option value="Declined">Declined</option>
+													<option value="Offered">Offered</option>
+												</select> -->
+											</td>
 										</tr>
 									</tbody>
 									{% endfor %}
 								</table>
 							{% else %}
 							<div class="container">
-								You have not created any jobs.
+								There are no applicants for the job.
 							</div>
 							{% endif %}
 							<!-- </div> -->

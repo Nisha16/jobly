@@ -29,13 +29,13 @@
 				<!-- SIDEBAR MENU -->
 				<div class="profile-usermenu">
 					<ul class="nav">
-						<li class="active">
-							<a href="#">
+						<li>
+							<a href="/joblist/">
 							<i class="glyphicon glyphicon-home"></i>
 							Jobs </a>
 						</li>
-						<li>
-							<a href="/applicantslist/">
+						<li class="active">
+							<a href="#applicants">
 							<i class="glyphicon glyphicon-user"></i>
 							Applicants </a>
 						</li>
@@ -54,40 +54,35 @@
 				<!-- END MENU -->
 			</div>
 		</div>
-		<div class="col-md-9 tab-content">
-            <div class="profile-content">
-							<a href="/add-new-job/"><span class="glyphicon glyphicon-log-out"></span> Create Job Requirement</a>
-							<!-- <div class="container"> -->
-              {% if jobList %}
-								<table class="table table-hover table-responsive">
-									<thead>
-										<th>Job ID</th>
-										<th>Title</th>
-										<th>Job Descritpion</th>
-										<th>Requested Date</th>
-										<th>Department</th>
-										<th>More Details</th>
-									</thead>
-									<tbody>
-										<tr>
-											{% for each in jobList %}
-											<td>{{ each[8] }}</td>
-											<td>{{ each[1] }}</td>
-											<td>{{ each[3] }}</td>
-											<td>{{ each[9] }}</td>
-											<td>{{ each[10] }}</td>
-											<td><a href="/jobs/{{ each[8] }}" target="_blank">View</a></td>
-										</tr>
-									</tbody>
-									{% endfor %}
-								</table>
-							{% else %}
-							<div class="container">
-								You have not created any jobs.
-							</div>
-							{% endif %}
-							<!-- </div> -->
-            </div>
+		<!-- Applicants list -->
+		<div id="applicants" class="col-md-9 tab-content">
+			<div class="profile-content">
+				{% if applicantList %}
+								{% for each in applicantList %}
+								<div id="rectangle">
+									<p>
+										<span style="float: left"><a href="/jobs/{{ each[2] }}" target="_blank"><b>{{ each[0] }}</b></a></span>
+  									<span style="float: right"><i>{{ each[2] }}</i></span>
+									</p>
+									<br><br>
+									<p>
+										<b>Date Posted: </b>{{ each[1].strftime('%m-%d-%Y') }}
+									</p>
+									<p>
+										<b>No. of Applicants: </b>{{ each[3] }}
+										<p><a href="/applicants/{{ each[2] }}/">Click for Applicant list</a></p>
+									</p>
+								</div>
+								<br><br>
+						{% endfor %}
+				{% else %}
+				<div class="container">
+					There are no applicants fro any of the jobs you have created..
+				</div>
+				{% endif %}
+
+			</div>
+
 		</div>
 	</div>
 </div>

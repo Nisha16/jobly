@@ -56,37 +56,36 @@
 		</div>
 		<div class="col-md-9 tab-content">
             <div class="profile-content">
-							<a href="/add-new-job/"><span class="glyphicon glyphicon-log-out"></span> Create Job Requirement</a>
-							<!-- <div class="container"> -->
-              {% if jobList %}
-								<table class="table table-hover table-responsive">
-									<thead>
-										<th>Job ID</th>
-										<th>Title</th>
-										<th>Job Descritpion</th>
-										<th>Requested Date</th>
-										<th>Department</th>
-										<th>More Details</th>
-									</thead>
-									<tbody>
-										<tr>
-											{% for each in jobList %}
-											<td>{{ each[8] }}</td>
-											<td>{{ each[1] }}</td>
-											<td>{{ each[3] }}</td>
-											<td>{{ each[9] }}</td>
-											<td>{{ each[10] }}</td>
-											<td><a href="/jobs/{{ each[8] }}" target="_blank">View</a></td>
-										</tr>
-									</tbody>
+							{% if appData %}
+								<div class="container">
+									{% for each in appData %}
+									<h3><strong>Applicant Details</strong></h3>
+									<br>
+									<i><b>Applicant Name: </b></i> {{ each[0] }}
+									<br>
+									<i><b>Contact Info: </b></i> {{ each[1] }}
+									<br>
+									<i><b>Job number: </b></i> {{ each[2] }}
+									<br>
+									<i><b>Resume: </b></i> <a href="/Users/vidya/Desktop/Nisha/WebApplications/flask_project/{{ each[3] }}" download>Download <i class="fa fa-download" aria-hidden="true"></i></a>
+									<br>
+										<form action="/applicants/{{ each[2] }}/details/{{ each[0] }}/update/" method="post">
+										<i><b>Stage: </b></i>
+										<select name="stages">
+											<option value="New">{{ each[4] }}</option>
+											<option value="Screening">Screening</option>
+											<option value="Interviewing">Interviewing</option>
+											<option value="Declined">Declined</option>
+											<option value="Offered">Offered</option>
+										</select>
+										<br>
+										<button type="Submit" class="btn btn-success" name="button">Update</button>
+										</form>
 									{% endfor %}
-								</table>
+								</div>
 							{% else %}
-							<div class="container">
-								You have not created any jobs.
-							</div>
+								<h2>The Requested applicant is not found</h2>
 							{% endif %}
-							<!-- </div> -->
             </div>
 		</div>
 	</div>

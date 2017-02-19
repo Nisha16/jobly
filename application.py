@@ -55,6 +55,8 @@ def main():
 				session['logged_in'] = True
 				session['email'] = request.form['email']
 				flash("You are now logged in")
+
+				# To display created jobs  for recruiter
 				jobList = None
 				jobList = c.execute("SELECT * FROM Jobs WHERE creator = (%s)", session['email'])
 				if int(jobList) > 0:
@@ -84,6 +86,21 @@ def logout():
 @app.route('/homepage/')
 def homepage():
 	return render_template("homepage.html")
+
+@app.route('/joblist/')
+@login_required
+def showJobs():
+	recruiter = session['email']
+	c, conn = connection()
+	jobList = None
+	jobList = c.execute("SELECT * FROM Jobs WHERE creator = (%s)", recruiter)
+	if int(jobList) > 0:
+		jobList = c.fetchall()
+	c.close()
+	conn.close()
+	gc.collect()
+	return render_template("homepage.html", jobList=jobList)
+
 
 
 class RegistrationForm(Form):
@@ -256,11 +273,71 @@ def applyForJob(jobid):
 		flash(e)
 		return (str(e))
 
-
-
 @app.route('/thankyou/')
 def thankyou():
 	return render_template("thankyou.html")
+
+@app.route('/applicantslist/')
+@login_required
+def showApplicants():
+	recruiter = session['email']
+	c, conn = connection()
+	applicantList = None
+	applicantList = c.execute("SELECT Jobs.title, jobs.reqDate, jobs.requisitionNumber, COUNT(Applicants.jobId) FROM Jobs LEFT JOIN Applicants ON Jobs.requisitionNumber=Applicants.jobId WHERE Jobs.creator = (%s) GROUP BY jobs.requisitionNumber, Jobs.title, jobs.reqDate ", recruiter)
+	if int(applicantList) > 0:
+		applicantList = c.fetchall()
+	c.close()
+	conn.close()
+	gc.collect()
+	return render_template("applicantList.html", applicantList=applicantList)
+
+@app.route('/applicants/<jobid>/', methods=['GET', 'POST'])
+@login_required
+def showApplicantsForJob(jobid):
+	c, conn = connection()
+	appData = None
+	appData = c.execute("SELECT jobId, appName, appEmail, appliedDate, linkToResume, stage FROM Applicants WHERE jobId = (%s)", jobid )
+	print appData
+	if int(appData) > 0:
+		appData = c.fetchall()
+	c.close()
+	conn.close()
+	gc.collect()
+	return render_template("applicantsForjob.html", appData=appData)
+
+@app.route('/applicants/<jobid>/details/<applicantname>/', methods=['GET', 'POST'])
+@login_required
+def showApplicantDetails(jobid, applicantname):
+	c, conn = connection()
+	appData = None
+	appData = c.execute("SELECT appName, appEmail, jobId, linkToResume, stage FROM Applicants WHERE appName = (%s)", applicantname )
+	if int(appData) > 0:
+		appData = c.fetchall()
+	c.close()
+	conn.close()
+	gc.collect()
+	return render_template("applicantDetails.html", appData=appData)
+
+@app.route('/applicants/<jobid>/details/<applicantname>/update/', methods=['GET', 'POST'])
+@login_required
+def updateAppDetails(applicantname, jobid):
+	c, conn = connection()
+	if request.method == "POST":
+		stage = request.form.get('stages')
+		c.execute("UPDATE Applicants SET stage = (%s) WHERE appName = (%s) and jobId = (%s)", (stage, applicantname, jobid))
+		print "POST call to update"
+		conn.commit()
+		c.close()
+		conn.close()
+		gc.collect()
+		return redirect(url_for('showApplicantsForJob', jobid=jobid))
+
+
+
+@app.route('/support/')
+def support():
+	return render_template("support.html")
+
 
 # For a given file, return whether it's an allowed type or not
 def allowed_file(filename):

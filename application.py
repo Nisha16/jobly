@@ -1,24 +1,34 @@
 from flask import Flask,render_template, request, url_for, redirect, flash, session
-from dbConnect import connection
 import gc
 import os
 
-from wtforms import Form, BooleanField, IntegerField, TextField, validators, PasswordField, DateField, TextAreaField
-from flask_wtf.file import FileField, FileRequired
-from wtforms.fields.html5 import DateField
+
 from passlib.hash import sha256_crypt
 from functools import wraps
 from datetime import timedelta
 from werkzeug import secure_filename
+from flask_mail import Mail, Message
 
 from MySQLdb import escape_string as thwart
 
+from dbConnect import connection
+from forms import RegistrationForm, ApplicantForm, mailForm, JobForm
+from mail import sendMail
+
 app = Flask(__name__)
+
+mail = Mail(app)
 
 # This is the path to the upload directory
 app.config['UPLOAD_FOLDER'] = 'resumes/'
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['txt', 'pdf', 'doc', 'docx'])
+
+# email server
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 25
+MAIL_USERNAME = None
+MAIL_PASSWORD = None
 
 
 @app.errorhandler(405)
@@ -100,37 +110,6 @@ def showJobs():
 	conn.close()
 	gc.collect()
 	return render_template("homepage.html", jobList=jobList)
-
-
-
-class RegistrationForm(Form):
-	firstname = TextField('Firstname', [validators.Length(min=2, max=20)])
-	lastname = TextField('Lastname', [validators.Length(min=2, max=20)])
-	email = TextField('Email Address', [validators.Length(min=6, max=50)])
-	password = PasswordField('New Password', [
-        validators.Required(),
-        validators.EqualTo('confirm', message='Passwords must match')
-    ])
-	confirm = PasswordField('Repeat Password')
-	# accept_tos = BooleanField('I accept the Terms of Service and Privacy Notice (updated Jan 21, 2017)', [validators.Required()])
-
-class JobForm(Form):
-	title = TextField('Title', [validators.Length(min=2, max=20)])
-	requirement = TextAreaField('Requirement', [validators.Length(min=2, max=1000)])
-	jobDesc = TextAreaField('Job Description', [validators.Length(min=2, max=1000)])
-	location = TextField('Location', [validators.Length(min=2, max=20)])
-	experience = IntegerField('Experience')
-	rcg = BooleanField('RCG', default=False)
-	internship = BooleanField('Internship', default=False)
-	requisition = TextField('Req Number', [validators.Length(min=3, max=10)])
-	reqdate = DateField('Req Date', format='%Y-%m-%d')
-	dept = TextField('Department', [validators.Length(min=6, max=50)])
-
-class ApplicantForm(Form):
-	applicantName = TextField('Applicant Name', [validators.Length(min=2, max=20)])
-	applicantEmail = TextField('Applicant Email Address', [validators.Length(min=6, max=50)])
-	appliedDate = DateField('Applied Date', format='%Y-%m-%d')
-
 
 @app.route('/register/', methods=["GET","POST"])
 def register_page():
@@ -332,7 +311,23 @@ def updateAppDetails(applicantname, jobid):
 		gc.collect()
 		return redirect(url_for('showApplicantsForJob', jobid=jobid))
 
-
+@app.route('/sendMail/', methods=['GET', 'POST'])
+@login_required
+def mailData():
+	try:
+		form = mailForm(request.form)
+		if request.method == 'POST' and form.validate():
+			applicantName = form.applicantName.data
+			subject = form.subject.data
+			messageBody = form.messageBody.data
+			fromEmail = session['email']
+			appEmail = form.appEmail.data
+			sendMail(appEmail, fromEmail, subject, messageBody)
+			return redirect(url_for('thankyou'))
+		return render_template("email.html", form=form)
+	except Exception as e:
+		flash(e)
+		return (str(e))
 
 @app.route('/support/')
 def support():

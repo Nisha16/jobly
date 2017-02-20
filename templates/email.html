@@ -1,0 +1,59 @@
+{% extends "header.html" %}
+
+{% block body %}
+
+<body>
+	<div class="container">
+		<div class="row">
+			{% from "_formhelpers.html" import render_field %}
+			<form class="form-horizontal" action="/sendMail/" method="post">
+				<fieldset>
+					<!-- Form Name -->
+					<legend>Contact Applicant</legend>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Name</label>
+						<div class="col-md-5">
+							{{render_field(form.applicantName, placeholder="Applicant name", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Email</label>
+						<div class="col-md-5">
+							{{render_field(form.appEmail, placeholder="Applicant Email", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Subject</label>
+						<div class="col-md-5">
+							{{render_field(form.subject, placeholder="Subject", class="form-control input-md")}}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-4 control-label" for="Current Fleet Size">Message</label>
+						<div class="col-md-5">
+							{{render_field(form.messageBody, placeholder="Message", class="form-control input-md")}}
+						</div>
+					</div>
+
+
+					<!-- Button -->
+					<div class="form-group">
+					  <div class="col-md-7 control-label">
+					    <button id="singlebutton" name="singlebutton" class="btn btn-primary">Send</button>
+					  </div>
+					</div>
+				</fieldset>
+			</form>
+			{% if error %}
+				<p class="error"><strong>Error:</strong>{{error}}</p>
+			{% endif %}
+		</div>
+
+	</div>
+</body>
+
+{% endblock %}

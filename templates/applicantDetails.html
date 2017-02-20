@@ -19,13 +19,6 @@
 						{% endif %}
 					</div>
 				</div>
-				<!-- END SIDEBAR USER TITLE -->
-				<!-- SIDEBAR BUTTONS -->
-				<!-- <div class="profile-userbuttons">
-					<button type="button" class="btn btn-success btn-sm">Follow</button>
-					<button type="button" class="btn btn-danger btn-sm">Message</button>
-				</div> -->
-				<!-- END SIDEBAR BUTTONS -->
 				<!-- SIDEBAR MENU -->
 				<div class="profile-usermenu">
 					<ul class="nav">
@@ -64,7 +57,7 @@
 										<i><b>Applicant Name: </b></i> {{ each[0] }}
 										<br>
 										<br>
-										<i><b>Contact Info: </b></i> {{ each[1] }}
+										<i><b>Contact Info: </b></i> <a href="/sendMail/" data-toggle="tooltip" data-placement="right" title="Click here to send email">{{ each[1] }}</a>
 										<br>
 										<br>
 										<i><b>Job number: </b></i> {{ each[2] }}
@@ -97,6 +90,11 @@
 </div>
 <br>
 <br>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
 
 
 {% endblock %}

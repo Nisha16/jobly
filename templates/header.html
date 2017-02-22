@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Jobly</title>
     <meta content="width=device-width,initial-scale=1" name=viewport>
-    <link rel="icon" href="{{ url_for('static', filename='img/logo.png')}}">
+    <link rel="icon" href="{{ url_for('static', filename='img/jobly.png')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
@@ -17,7 +17,7 @@
     <nav class="navbar navbar-default">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="/"><img class=logo src="{{ url_for('static', filename='img/jobly.png') }}"></a>
+          <a class="navbar-brand" href="/joblist/"><img class=logo src="{{ url_for('static', filename='img/jobly.png') }}"></a>
         </div>
         <ul class="nav navbar-nav navbar-right">
           {% if session.logged_in %}

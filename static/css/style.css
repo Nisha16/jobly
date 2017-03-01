@@ -261,13 +261,36 @@ input::-webkit-input-placeholder {
 
 .navbar-default .navbar-nav > li > a {
     font-size: 16px;
+    color: #0A80CC;
 }
 
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
     font-weight: bold;
+    color: #0A80CC;
 }
 
 .appForm {
   padding-top: 30px;
+}
+
+.pimage{
+    width:100px;
+    height:100px;
+    display: block;
+    -webkit-border-radius: 50% !important;
+    -moz-border-radius: 50% !important;
+    border-radius: 50% !important;
+    align-content: center;
+}
+
+
+.photo_text {
+  padding-top: 40px;
+  padding-left: 20px;
+}
+
+.profile_text {
+  max-width: 40px;
+  padding-bottom: 20px;
 }

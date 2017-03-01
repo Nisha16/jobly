@@ -1,4 +1,4 @@
-from flask import Flask,render_template, request, url_for, redirect, flash, session
+from flask import Flask,render_template, request, url_for, redirect, flash, session, send_from_directory
 import gc
 import os
 
@@ -17,12 +17,16 @@ from mail import sendMail
 
 app = Flask(__name__)
 
-mail = Mail(app)
 
 # This is the path to the upload directory
 app.config['UPLOAD_FOLDER'] = 'resumes/'
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['txt', 'pdf', 'doc', 'docx'])
+
+# This is the path to the upload profile photo
+app.config['PROFILE_FOLDER'] = 'profile/'
+# These are the extension that we are accepting to be uploaded
+app.config['PHOTO_EXT'] = set(['png', 'jpg', 'jpeg', 'gif'])
 
 # email server
 MAIL_SERVER = 'localhost'
@@ -65,25 +69,26 @@ def main():
 				session['logged_in'] = True
 				session['email'] = request.form['email']
 				flash("You are now logged in")
-
+				email = session['email']
+				profile_pic = getProfilephoto(email)
 				# To display created jobs  for recruiter
 				jobList = None
 				jobList = c.execute("SELECT * FROM Jobs WHERE creator = (%s)", session['email'])
 				if int(jobList) > 0:
 					jobList = c.fetchall()
-					return render_template("homepage.html", data=data, jobList=jobList)
+					return render_template("homepage.html", data=data, jobList=jobList, profile_pic=profile_pic)
 				else:
-					return render_template("homepage.html", data=data)
+					return render_template("homepage.html", data=data, profile_pic=profile_pic)
 			else:
 				error = "Invalid credentials, Please try again."
 
 		gc.collect()
-		return render_template("index.html", error=error)
+		return render_template("main.html", error=error)
 
 	except Exception as e:
 		error = "Record does not exists."
 		flash(e)
-		return render_template('index.html', error=error)
+		return render_template('main.html', error=error)
 
 @app.route('/logout/')
 @login_required
@@ -103,13 +108,14 @@ def showJobs():
 	recruiter = session['email']
 	c, conn = connection()
 	jobList = None
+	profile_pic = getProfilephoto(recruiter)
 	jobList = c.execute("SELECT * FROM Jobs WHERE creator = (%s)", recruiter)
 	if int(jobList) > 0:
 		jobList = c.fetchall()
 	c.close()
 	conn.close()
 	gc.collect()
-	return render_template("homepage.html", jobList=jobList)
+	return render_template("homepage.html", jobList=jobList, profile_pic=profile_pic)
 
 @app.route('/register/', methods=["GET","POST"])
 def register_page():
@@ -122,7 +128,6 @@ def register_page():
 			email = form.email.data
 			password = sha256_crypt.encrypt((str(form.password.data)))
 			c, conn = connection()
-
 			x = c.execute("SELECT * FROM User WHERE email = (%s)", (thwart(email)))
 			if int((x)) > 0:
 				print "Member exists"
@@ -144,6 +149,58 @@ def register_page():
 		return render_template("register.html", form=form)
 	except Exception as e:
 		return (str(e))
+
+def getProfilephoto(email):
+	c, conn = connection()
+	print "email: ", email
+	photo = None
+	photo = c.execute("SELECT profilePhoto FROM User WHERE email = (%s)", email)
+	if int(photo) > 0:
+		photo = c.fetchall()
+	print "photo: ", photo
+	c.close()
+	conn.close()
+	gc.collect()
+	return photo
+
+@app.route('/<path:path>/profile/<image>')
+def upload_image(image, path):
+	print "fethcing image"
+	return send_from_directory(app.config['PROFILE_FOLDER'],image)
+
+
+@app.route('/update-profile/', methods=["GET","POST"])
+@login_required
+def updateProfile():
+	c, conn = connection()
+	user = session['email']
+	profile_pic = getProfilephoto(user)
+	if request.method == "POST":
+		firstname = request.form.get('firstname')
+		lastname = request.form.get('lastname')
+		profilePhoto = request.files['photo']
+		phone = request.form.get('phone')
+		linkedin = request.form.get('linkedin')
+		linkToPhoto = None
+		if profilePhoto and allowed_photo(profilePhoto.filename):
+			filename = secure_filename(profilePhoto.filename)
+			profilePhoto.save(os.path.join(app.config['PROFILE_FOLDER'],filename))
+			linkToPhoto = os.path.join(app.config['PROFILE_FOLDER'],filename)
+			print "linkToPhoto:", linkToPhoto
+		c.execute("UPDATE User SET firstname = (%s), lastname = (%s), profilePhoto = (%s), phone = (%s), linkedin = (%s) WHERE email = (%s)",(firstname, lastname, linkToPhoto, phone,linkedin, user))
+		conn.commit()
+		c.close()
+		conn.close()
+		gc.collect()
+		return render_template("profile_update.html", profile_pic=profile_pic)
+	userData = None
+	userData = c.execute("SELECT firstName, lastName, profilePhoto, phone, linkedin FROM User WHERE email = (%s)", user )
+	if int(userData) > 0:
+		userData = c.fetchall()
+	c.close()
+	conn.close()
+	gc.collect()
+	return render_template("profile_update.html", userData=userData, profile_pic=profile_pic)
 
 @app.route('/add-new-job/', methods=["GET","POST"])
 @login_required
@@ -228,7 +285,7 @@ def applyForJob(jobid):
 			applicantEmail = form.applicantEmail.data
 			appliedDate = form.appliedDate.data
 			file = request.files['file']
-			if file:
+			if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 				linktofile = os.path.join(app.config['UPLOAD_FOLDER'],filename)
@@ -262,19 +319,22 @@ def showApplicants():
 	recruiter = session['email']
 	c, conn = connection()
 	applicantList = None
+	profile_pic = getProfilephoto(recruiter)
 	applicantList = c.execute("SELECT Jobs.title, jobs.reqDate, jobs.requisitionNumber, COUNT(Applicants.jobId) FROM Jobs LEFT JOIN Applicants ON Jobs.requisitionNumber=Applicants.jobId WHERE Jobs.creator = (%s) GROUP BY jobs.requisitionNumber, Jobs.title, jobs.reqDate ", recruiter)
 	if int(applicantList) > 0:
 		applicantList = c.fetchall()
 	c.close()
 	conn.close()
 	gc.collect()
-	return render_template("applicantList.html", applicantList=applicantList)
+	return render_template("applicantList.html", applicantList=applicantList, profile_pic=profile_pic)
 
 @app.route('/applicants/<jobid>/', methods=['GET', 'POST'])
 @login_required
 def showApplicantsForJob(jobid):
+	recruiter = session['email']
 	c, conn = connection()
 	appData = None
+	profile_pic = getProfilephoto(recruiter)
 	appData = c.execute("SELECT jobId, appName, appEmail, appliedDate, linkToResume, stage FROM Applicants WHERE jobId = (%s)", jobid )
 	print appData
 	if int(appData) > 0:
@@ -282,25 +342,29 @@ def showApplicantsForJob(jobid):
 	c.close()
 	conn.close()
 	gc.collect()
-	return render_template("applicantsForjob.html", appData=appData)
+	return render_template("applicantsForjob.html", appData=appData, profile_pic=profile_pic)
 
 @app.route('/applicants/<jobid>/details/<applicantname>/', methods=['GET', 'POST'])
 @login_required
 def showApplicantDetails(jobid, applicantname):
+	recruiter = session['email']
 	c, conn = connection()
 	appData = None
+	profile_pic = getProfilephoto(recruiter)
 	appData = c.execute("SELECT appName, appEmail, jobId, linkToResume, stage FROM Applicants WHERE appName = (%s)", applicantname )
 	if int(appData) > 0:
 		appData = c.fetchall()
 	c.close()
 	conn.close()
 	gc.collect()
-	return render_template("applicantDetails.html", appData=appData)
+	return render_template("applicantDetails.html", appData=appData, profile_pic=profile_pic)
 
 @app.route('/applicants/<jobid>/details/<applicantname>/update/', methods=['GET', 'POST'])
 @login_required
 def updateAppDetails(applicantname, jobid):
+	recruiter = session['email']
 	c, conn = connection()
+	profile_pic = getProfilephoto(recruiter)
 	if request.method == "POST":
 		stage = request.form.get('stages')
 		c.execute("UPDATE Applicants SET stage = (%s) WHERE appName = (%s) and jobId = (%s)", (stage, applicantname, jobid))
@@ -309,7 +373,7 @@ def updateAppDetails(applicantname, jobid):
 		c.close()
 		conn.close()
 		gc.collect()
-		return redirect(url_for('showApplicantsForJob', jobid=jobid))
+		return redirect(url_for('showApplicantsForJob', jobid=jobid, profile_pic=profile_pic))
 
 @app.route('/sendMail/', methods=['GET', 'POST'])
 @login_required
@@ -333,6 +397,24 @@ def mailData():
 def support():
 	return render_template("support.html")
 
+@app.route('/peers/')
+@login_required
+def showRecruiters():
+	recruiter = session['email']
+	c, conn = connection()
+	recData = None
+	profile_pic = getProfilephoto(recruiter)
+	recData = c.execute("SELECT firstName, lastName, email FROM User")
+	if int(recData) > 0:
+		recData = c.fetchall()
+	c.close()
+	conn.close()
+	gc.collect()
+	return render_template("recruiters.html", recData=recData, profile_pic=profile_pic)
+
+def allowed_photo(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['PHOTO_EXT']
 
 # For a given file, return whether it's an allowed type or not
 def allowed_file(filename):

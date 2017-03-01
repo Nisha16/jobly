@@ -1,0 +1,131 @@
+{% extends "extend.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="row profile">
+		<div class="col-md-3">
+			<div class="profile-sidebar">
+				<!-- SIDEBAR USERPIC -->
+				<div class="profile-userpic">
+					{% if profile_pic %}
+					<img src="{{ profile_pic[0][0] }}" class="img-responsive" alt="">
+					{% else %}
+					<img src="{{ url_for('static', filename='img/user.png') }}" class="img-responsive" alt="">
+					{% endif %}
+				</div>
+				<!-- END SIDEBAR USERPIC -->
+				<!-- SIDEBAR USER TITLE -->
+				<div class="profile-usertitle">
+					<div class="profile-usertitle-name">
+						{% if session.logged_in %}
+							{{ session.email }}
+						{% endif %}
+					</div>
+				</div>
+				<!-- END SIDEBAR USER TITLE -->
+				<!-- SIDEBAR BUTTONS -->
+				<!-- <div class="profile-userbuttons">
+					<button type="button" class="btn btn-success btn-sm">Follow</button>
+					<button type="button" class="btn btn-danger btn-sm">Message</button>
+				</div> -->
+				<!-- END SIDEBAR BUTTONS -->
+				<!-- SIDEBAR MENU -->
+				<div class="profile-usermenu">
+					<ul class="nav">
+						<li>
+							<a href="/joblist/">
+							<i class="glyphicon glyphicon-home"></i>
+							Jobs </a>
+						</li>
+						<li>
+							<a href="/applicantslist/">
+							<i class="glyphicon glyphicon-user"></i>
+							Applicants </a>
+						</li>
+						<li class="active">
+							<a href="#">
+							<i class="glyphicon glyphicon-ok"></i>
+							Profile </a>
+						</li>
+						<li>
+							<a href="/peers/">
+							<i class="glyphicon glyphicon-user"></i>
+							Connect </a>
+						</li>
+					</ul>
+				</div>
+				<!-- END MENU -->
+			</div>
+		</div>
+		<div class="col-md-9 tab-content">
+      <div class="profile-content">
+				<form action="/update-profile/" method="post" enctype="multipart/form-data">
+					{% if userData %}
+					{% for user in userData %}
+
+						<div class="form-group">
+							<div class="col-sm-20">
+								<div class="input-group">
+									<span class="input-group-addon"><img src="{{ url_for('static', filename='img/user.png') }}" alt="" class="pimage pull-middle"></span>
+									<input type="file" id="profile_image" name="photo" class="photo_text">
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+						<div class="form-group">
+							<div class="col-sm-6">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+										<input class="form-control" class="profile_text" type="text" name="firstname" value= "{{ user[0] }}" placeholder="firstname">
+								</div>
+							</div>
+						</div>
+						</div>
+						<br>
+						<div class="row">
+						<div class="form-group">
+							<div class="col-sm-6">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+										<input class="form-control" type="text" name="lastname" value= "{{ user[1] }}" placeholder="lastname">
+								</div>
+							</div>
+						</div>
+					</div>
+					<br>
+					<div class="row">
+						<div class="form-group">
+							<div class="col-sm-6">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-phone-square" aria-hidden="true"></i></span>
+										<input class="form-control size" type="phone" name="phone" value= "{{ user[3] }}" placeholder="phone">
+								</div>
+							</div>
+						</div>
+						</div>
+						<br>
+						<div class="row">
+						<div class="form-group">
+							<div class="col-sm-6">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-linkedin-square" aria-hidden="true"></i></span>
+										<input class="form-control" type="text" name="linkedin" value= "{{ user[4] }}" placeholder="linkedin profile">
+								</div>
+							</div>
+						</div>
+					</div>
+					<br>
+					<p><input type=submit class="btn btn-primary login-button" value=Update></p>
+
+
+					{% endfor %}
+					{% endif %}
+				</form>
+      </div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

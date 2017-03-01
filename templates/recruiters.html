@@ -8,7 +8,7 @@
 			<div class="profile-sidebar">
 				<!-- SIDEBAR USERPIC -->
 				<div class="profile-userpic">
-					{% if profile_pic %}
+          {% if profile_pic %}
 					<img src="{{ profile_pic[0][0] }}" class="img-responsive" alt="">
 					{% else %}
 					<img src="{{ url_for('static', filename='img/user.png') }}" class="img-responsive" alt="">
@@ -33,8 +33,8 @@
 				<!-- SIDEBAR MENU -->
 				<div class="profile-usermenu">
 					<ul class="nav">
-						<li class="active">
-							<a href="#">
+						<li >
+							<a href="/joblist/">
 							<i class="glyphicon glyphicon-home"></i>
 							Jobs </a>
 						</li>
@@ -48,7 +48,7 @@
 							<i class="glyphicon glyphicon-ok"></i>
 							Profile </a>
 						</li>
-						<li>
+						<li class="active">
 							<a href="/peers/">
 							<i class="glyphicon glyphicon-user"></i>
 							Connect </a>
@@ -60,37 +60,29 @@
 		</div>
 		<div class="col-md-9 tab-content">
             <div class="profile-content">
-							<a href="/add-new-job/"><span class="glyphicon glyphicon-log-out"></span> Create Job Requirement</a>
-							<!-- <div class="container"> -->
-              {% if jobList %}
-								<table class="table table-hover table-responsive">
-									<thead>
-										<th>Job ID</th>
-										<th>Title</th>
-										<th>Job Descritpion</th>
-										<th>Requested Date</th>
-										<th>Department</th>
-										<th>More Details</th>
-									</thead>
-									<tbody>
-										<tr>
-											{% for each in jobList %}
-											<td>{{ each[8] }}</td>
-											<td>{{ each[1] }}</td>
-											<td>{{ each[3] }}</td>
-											<td>{{ each[9] }}</td>
-											<td>{{ each[10] }}</td>
-											<td><a href="/jobs/{{ each[8] }}" target="_blank">View</a></td>
-										</tr>
-									</tbody>
-									{% endfor %}
-								</table>
-							{% else %}
-							<div class="container">
-								You have not created any jobs.
-							</div>
-							{% endif %}
-							<!-- </div> -->
+              <div class="container">
+									{% if recData %}
+									{% for each in recData %}
+									<div class="row">
+									<div class="col-sm-2 col-md-2">
+				            <img src="http://thetransformedmale.files.wordpress.com/2011/06/bruce-wayne-armani.jpg"
+				            alt="" class="img-rounded img-responsive" />
+				        	</div>
+                  <div class="col-sm-4 col-md-4">
+                    <p>
+											<i class="icon-envelope"></i> {{ each[0] }} {{ each[1] }}<br>
+                      <i class="icon-envelope"></i> {{ each[2] }} <br>
+                    </p>
+                  </div>
+                </div>
+								<br>
+								{% endfor %}
+								{% else %}
+								<div class="container">
+									There are no other recruiters.
+								</div>
+								{% endif %}
+              </div>
             </div>
 		</div>
 	</div>

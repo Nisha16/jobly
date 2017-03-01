@@ -427,4 +427,4 @@ app.permanent_session_lifetime = timedelta(minutes=1440)
 
 if __name__ == "__main__":
 	app.debug = True
-	app.run()
+	app.run(port=8080)

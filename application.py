@@ -7,7 +7,6 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 from datetime import timedelta
 from werkzeug import secure_filename
-from flask_mail import Mail, Message
 
 from MySQLdb import escape_string as thwart
 

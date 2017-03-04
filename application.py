@@ -320,7 +320,7 @@ def showApplicants():
 	c, conn = connection()
 	applicantList = None
 	profile_pic = getProfilephoto(recruiter)
-	applicantList = c.execute("SELECT Jobs.title, jobs.reqDate, jobs.requisitionNumber, COUNT(Applicants.jobId) FROM Jobs LEFT JOIN Applicants ON Jobs.requisitionNumber=Applicants.jobId WHERE Jobs.creator = (%s) GROUP BY jobs.requisitionNumber, Jobs.title, jobs.reqDate ", recruiter)
+	applicantList = c.execute("SELECT Jobs.title, Jobs.reqDate, Jobs.requisitionNumber, COUNT(Applicants.jobId) FROM Jobs LEFT JOIN Applicants ON Jobs.requisitionNumber=Applicants.jobId WHERE Jobs.creator = (%s) GROUP BY Jobs.requisitionNumber, Jobs.title, Jobs.reqDate ", recruiter)
 	if int(applicantList) > 0:
 		applicantList = c.fetchall()
 	c.close()

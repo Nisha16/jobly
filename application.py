@@ -163,6 +163,7 @@ def getProfilephoto(email):
 	return photo
 
 @app.route('/<path:path>/profile/<image>')
+@app.route('/profile/<image>', defaults={'path': ''})
 def upload_image(image, path):
 	print "fethcing image"
 	return send_from_directory(app.config['PROFILE_FOLDER'],image)
@@ -391,6 +392,29 @@ def mailData():
 	except Exception as e:
 		flash(e)
 		return (str(e))
+
+@app.route('/contactUs/', methods=['GET', 'POST'])
+def contactUs():
+	try:
+		if request.method == 'POST':
+			name = request.form.get('name')
+			email_address = request.form.get('email')
+			phone = request.form.get('phone')
+			message = request.form.get('message')
+			message_body = "Email: " + email_address + "\n" + "phone: " + phone + "\n" + message
+			email_To = 'vidya.gowdru@gmail.com'
+			subject = "Website contact from " + name
+			fromEmail = 'postmaster@nishags.co'
+			sendMail(email_To, fromEmail, subject, message_body)
+			return redirect(url_for('mainpage'))
+		return render_template("main.html")
+	except Exception as e:
+		return (str(e))
+
+@app.route('/')
+def mainpage():
+	return render_template('main.html')
+
 
 @app.route('/support/')
 def support():
